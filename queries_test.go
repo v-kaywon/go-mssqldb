@@ -14,6 +14,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/denisenkom/go-mssqldb/internal/mssqlerror"
 )
 
 func driverWithProcess(t *testing.T) *Driver {
@@ -619,7 +621,7 @@ func TestError(t *testing.T) {
 		t.Fatal("Query should fail")
 	}
 
-	if sqlerr, ok := err.(Error); !ok {
+	if sqlerr, ok := err.(mssqlerror.Error); !ok {
 		t.Fatalf("Should be sql error, actually %T, %v", err, err)
 	} else {
 		if sqlerr.Number != 2812 { // Could not find stored procedure 'bad'
@@ -969,7 +971,7 @@ func TestErrorInfo(t *testing.T) {
 	defer conn.Close()
 
 	_, err := conn.Exec("select bad")
-	if sqlError, ok := err.(Error); ok {
+	if sqlError, ok := err.(mssqlerror.Error); ok {
 		if sqlError.SQLErrorNumber() != 207 /*invalid column name*/ {
 			t.Errorf("Query failed with unexpected error number %d %s", sqlError.SQLErrorNumber(), sqlError.SQLErrorMessage())
 		}
@@ -980,7 +982,7 @@ func TestErrorInfo(t *testing.T) {
 		t.Error("Failed to convert error to SQLErorr", err)
 	}
 	_, err = conn.Exec("RAISERROR('test message', 18, 111)")
-	if sqlError, ok := err.(Error); ok {
+	if sqlError, ok := err.(mssqlerror.Error); ok {
 		if sqlError.SQLErrorNumber() != 50000 {
 			t.Errorf("Query failed with unexpected error number %d %s", sqlError.SQLErrorNumber(), sqlError.SQLErrorMessage())
 		}

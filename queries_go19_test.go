@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"testing"
 	"time"
+
+	"github.com/denisenkom/go-mssqldb/internal/mssqlerror"
 )
 
 func TestOutputParam(t *testing.T) {
@@ -224,7 +226,7 @@ END;
 
 		t.Run("should fail if destination has invalid type", func(t *testing.T) {
 			// Error type should not be supported
-			var err_out Error
+			var err_out mssqlerror.Error
 			_, err := db.ExecContext(ctx, sqltextrun,
 				sql.Named("bid", sql.Out{Dest: &err_out}),
 			)
@@ -244,7 +246,7 @@ END;
 
 		t.Run("should fail if parameter has invalid type", func(t *testing.T) {
 			// passing invalid parameter type
-			var err_val Error
+			var err_val mssqlerror.Error
 			_, err = db.ExecContext(ctx, sqltextrun, err_val)
 			if err == nil {
 				t.Error("Expected to fail but it didn't")
