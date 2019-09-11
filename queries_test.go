@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/denisenkom/go-mssqldb/internal/mssqlerror"
+	"github.com/denisenkom/go-mssqldb/internal/mssqltypes"
 )
 
 func driverWithProcess(t *testing.T) *Driver {
@@ -838,7 +839,7 @@ func TestUniqueIdentifierParam(t *testing.T) {
 		uuid interface{}
 	}
 
-	expected := UniqueIdentifier{0x01, 0x23, 0x45, 0x67,
+	expected := mssqltypes.UniqueIdentifier{0x01, 0x23, 0x45, 0x67,
 		0x89, 0xAB,
 		0xCD, 0xEF,
 		0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
@@ -858,7 +859,7 @@ func TestUniqueIdentifierParam(t *testing.T) {
 
 	for _, test := range values {
 		t.Run(test.name, func(t *testing.T) {
-			var uuid2 UniqueIdentifier
+			var uuid2 mssqltypes.UniqueIdentifier
 			err := conn.QueryRow("select ?", test.uuid).Scan(&uuid2)
 			if err != nil {
 				t.Fatal("select / scan failed", err.Error())
